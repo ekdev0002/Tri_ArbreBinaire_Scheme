@@ -1,0 +1,264 @@
+;-------------------------Travaux pratiques: Tri des arbres -----------------------------------
+;                          KABORE Yabyouré Eric
+;---------------------------------IAI ING1 2017------------------------------------------------- 
+
+
+#lang racket/gui
+(require racket/draw)
+(require racket/gui)
+(require racket/format)
+(require racket/draw)
+(require "arbre2.rkt")
+(require "fonctionsdetri.rkt")
+
+
+;definition des polices
+(define police1(make-object font% 13 'script 'normal 'bold #f 'smoothed))
+(define police4(make-object font% 13 'script 'italic 'bold #f))
+(define police2(make-object font% 12 'system 'normal 'normal #f))
+(define police3(make-object font% 13 'roman 'italic 'bold #f))
+
+
+;fenetre principale
+(define win (new frame% 
+                 (label "Programme de Tri")
+                 (width 600)
+                 (height 200) 
+                 (x 450) 
+                 (y 250)
+                 )
+  )
+
+
+;création de la fenêtre d'accueil
+(define fenetre_accueil (new frame%
+                    [label "ACCUEIL"]
+                    [width 615]
+                    [height 415]
+                    [x 400]
+                    [y 100]
+                    [alignment '(center center)]
+                    [style '(no-caption no-resize-border)]                                       
+                    )
+  )
+
+ 
+
+;definition de l' image d'accueil
+(define texte_accueil(make-object bitmap% "imageacc.BMP"))
+(define img_quitter(make-object bitmap% "quitter.BMP"))
+(define img-continuer(make-object bitmap% "cont2.BMP"))
+
+
+;definition du panel de l'image d'accueil
+(define panel-msg-acces1(new horizontal-panel%
+                  [parent fenetre_accueil]
+                  [min-height 400]
+                  [alignment '(center bottom)]
+                  )
+  )
+
+
+
+;definition des panels fenetre accueil
+(define panel-msg-acces(new horizontal-panel%
+                  [parent fenetre_accueil]
+                  [alignment '(center bottom)]
+                  )
+  )
+
+;définition du conteneur du texte d'accueil
+(define canevas (instantiate canvas%(panel-msg-acces1)
+                  (paint-callback (lambda(canevas dc)
+                                    (logo_fond_ecran dc)
+                                    ))
+                  )
+  )
+
+
+;définition de l'afficheur du texte d'accueil
+(define (logo_fond_ecran dc) (send dc draw-bitmap texte_accueil 1 1 'solid))
+
+
+
+;lancement de la fentre d'accueil
+(send fenetre_accueil  show #t)
+
+
+;definition de la fenetre "quitter"
+(define fenetre_quitter (new frame%
+                            [label "CONFIRMATION"]                               
+                            [width 300]   
+                            [height 100]   
+                            [x 550]   
+                            [y 250]                                      
+                            )
+  )
+
+
+;definition des panels pour la fenetre quitter
+(define panneau-message (new horizontal-panel%   
+                            [parent fenetre_quitter]                             
+                            [vert-margin 10]
+                            [horiz-margin 10]
+                            [alignment '(center top)]   
+                            )
+  ) 
+
+(define panneau-boutons-quitter (new horizontal-panel%   
+                                    [parent fenetre_quitter] 
+                                    [vert-margin 10]
+                                    [horiz-margin 10]
+                                    [alignment '(center bottom)]
+                                    )
+  )
+
+
+
+
+;bouton et action de "Oui"
+(define evt-oui (lambda (o e)
+                  (send fenetre_quitter on-exit)
+                  (send win on-exit)
+                  (send fenetre_accueil on-exit)
+                  )
+  )
+
+(define bouton-ok (new button%   
+                      [label "Oui"]
+                      [font police3]
+                      [parent panneau-boutons-quitter]                         
+                      [callback evt-oui]                            
+                      )
+  )
+
+;bouton et action de "Non"
+(define evt-non (lambda (o e)
+                  (send fenetre_quitter on-exit)
+                  )
+  )
+
+(define bouton-non (new button%   
+                       [label "Non"] 
+                       [font police3]
+                       [parent panneau-boutons-quitter]   
+                       [callback evt-non]                            
+                       )
+  )
+
+
+;message de confirmation "quitter"
+(define le-message (new message%  
+                       [label "Etes-vous sûr de vouloir quitter?"]
+                       [font police3]
+                       [parent panneau-message]                             
+                            )
+  )
+
+;defnition des evenement lancer et quitter le programe
+(define evt-quitter(lambda (o e)
+  (send fenetre_quitter show #t)
+                     )
+  )
+
+
+(define evt-go (lambda (o e)
+                 (send fenetre_accueil on-exit)
+                 
+                 (send fenetre1 show #t)
+                 )
+  )
+
+
+;definition de l'evenement retour à la page d'accuil
+(define evt-retour(lambda (o e)
+  (send win on-exit)
+  (send fenetre_accueil show #t)
+                    )
+  )
+
+
+
+;bouton de "quitter" fenetre accueil
+
+(define quitter1(new button%
+                    [label img_quitter]
+                    [parent panel-msg-acces]
+                    [callback evt-quitter]                    
+                    )
+  )
+
+
+;bouton permetant d'accéder au menu prinicipal
+
+(define bouton-go (new button%
+                      [label img-continuer]
+                      [parent panel-msg-acces]
+                      [callback evt-go]                     
+                      )
+  )
+
+
+(define fenetre1(new frame%[label "arbre binaire trié"]
+                     [width 400]
+                     [height 200]
+                     [x 300]
+                     [y 100]))
+(define panel1(new horizontal-panel%[parent fenetre1]
+                                   [alignment'(center center)]))
+                  (define liste(new text-field%[parent panel1] [label "Saisir la liste"]
+                                                               ))
+(define panel3(new horizontal-panel%[parent fenetre1]
+                                   [alignment'(center center)]))
+(define msg(new message%[parent panel3][label "Resultat"]))
+(define resultat(new text-field%[parent panel3]
+                                [label ""]
+                                [enabled #f]))
+(define panel2(new horizontal-panel%[parent fenetre1]
+                                    [alignment '(center center)]))
+                  (new button% [parent panel2] [label "Trier"]                                   
+                                               [callback(lambda(button event)
+                                   (send resultat set-value (string-join (conversionInverse (triinfixe (conversion(string-split(send liste get-value))))))))]) 
+                  (new button% [parent panel2] [label "Réessayer"]
+                                               [callback(lambda(button event) 
+                                                (send liste set-value "")
+                                                (send resultat set-value ""))])
+                  (new button% [parent panel2] [label "Quitter"]
+                                               [callback(lambda(button event)
+                                                          (define dialog (instantiate dialog% ("demande de confirmation")))
+                                                          (new message% [parent dialog] [label "Etes-vous sûr de vouloir quitter?"])
+                                                           (define panel3 (new horizontal-panel% [parent dialog]
+                                                                                                [alignment '(center center)]))
+                                                                               (new button% [parent panel3] [label "Non"]
+                                                                                                            [callback(lambda(button event)
+                                                                                                                     (send dialog show #f))])                                                                                               
+                                                                                (new button% [parent panel3] [label "Oui"]
+                                                                                                             [callback(lambda(button event)
+                                                                                                                     (send dialog show #f)
+                                                                                                                     (send fenetre1 show #f))])
+                                                                                 (when (system-position-ok-before-cancel?)
+                                                                                   (send panel3 change-children reverse))
+                                                                                         (send dialog show #t))])
+
+
+
+(define verification (lambda (l)
+                (cond ((null? l) 0)
+                      ((and (null? (cdr l)) (not (equal? (string->number (car l)) #f))) 1)
+                      ((and (null? (cdr l)) (equal? (string->number (car l)) #f)) (- 0 1))
+                      ((equal? (string->number (car l)) #f)  (- 0 1))
+                      (#t (verification (cdr l)))
+                      )))
+           ;#### Conversion des caractères en nombres et construction de la liste numérique ####
+
+(define conversion (lambda (l)
+                    (cond ((null? l) '())
+                          (#t (cons (string->number (car l)) (conversion (cdr l)))))
+                       ))
+          ;#### Conversion du resultat en caractères affichables ####
+
+(define conversionInverse (lambda (l)
+                    (cond ((null? l) '())
+                          (#t (cons (~a (car l)) (conversionInverse (cdr l)))))
+                       ))
+
